@@ -4,6 +4,10 @@ import time
 import pandas as pd
 from urllib3.util.retry import Retry
 
+"""
+Main module with various functions of Air monitoring package
+Written By Alon
+"""
 
 class DataImporter():
     def __init__(self, api_token='ApiToken 1cab20bf-0248-493d-aedc-27aa94445d15'):
