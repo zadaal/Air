@@ -13,7 +13,7 @@ import tablib
 import time
 import pandas as pd
 from urllib3.util.retry import Retry
-import Air_module
+import air_module
 
 list_station_ids=[31, 40, 64, 76, 77, 78, 367, 338, 513, 32, 139]
 city_dic=dict()
@@ -34,8 +34,14 @@ city_dic={
 # api_token = 'ApiToken 745356f0-5eee-4da8-aa71-b739f4acc081' # Alon
 api_token = 'ApiToken 1cab20bf-0248-493d-aedc-27aa94445d15' # Bahat
 # GET LIST OF ALL LOCATIONS ===================================================================
-data_importer = Air_module.DataImporter(api_token)
+data_importer = air_module.data_importer(api_token)
+data_processor = air_module.data_processor()
 json_all_cities, json_all_cities_df = data_importer.stations()
+data_plotter = air_module.data_plotter()
+
+# Get and plot locations
+stations_gdf = data_importer.stations()
+data_plotter.plot_stations(stations_gdf)
 
 # READ SPECIFIC LOCATIONS FROM city_dic ===================================================================
 
@@ -55,18 +61,21 @@ while flag_prfrm:
         print(t_crnt)
         for sttn_id in list_station_ids:
             json_by_city, json_by_city_df = data_importer.station_data(sttn_id)
-            json_by_city_latest, json_by_city_latest_df = data_importer.station_latest_data(sttn_id)
+            city_data_latest_json, city_data_latest_df = data_importer.station_latest_data(sttn_id)
             
-            latest_data = json_by_city_latest["data"][0]
+            latest_data = city_data_latest_json["data"][0]
             datetime = latest_data["datetime"]
             if datetime!=last_datetime:
+                # Parse data
+                city_data_latest_df = data_processor.json_to_df(city_data_latest_json)
+
                 # last_datetime=datetime
                 for i in range(0, len(latest_data["channels"])):
                     print("name: ", latest_data["channels"][i]["name"], ", value:", latest_data["channels"][i]["value"])
-                    city_name=city_dic[json_by_city_latest["stationId"]]
+                    city_name=city_dic[city_data_latest_json["stationId"]]
                     vec_values = (
-                    datetime, city_name, json_by_city_latest["stationId"], latest_data["channels"][i]["name"],
-                    latest_data["channels"][i]["value"], latest_data["channels"][i]["status"], latest_data["channels"][i]["valid"])
+                        datetime, city_name, city_data_latest_json["stationId"], latest_data["channels"][i]["name"],
+                        latest_data["channels"][i]["value"], latest_data["channels"][i]["status"], latest_data["channels"][i]["valid"])
                     teledata.append(vec_values)
 
         # with open('output.xlsx', 'ab') as f:

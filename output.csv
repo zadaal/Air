@@ -1,0 +1,204 @@
+Time,City,Id,parameter,value,status,valid
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NO,5.3,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NOX,19.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NO2,13.8,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,O3,44.7,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,PM10,-66.8,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,WS,1.2,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,WD,8.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,GSR,738.4,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,Rain,0.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,RH,59.2,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,Temp,15.0,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,StWd,42.8,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,PM2.5,-27.3,2,False
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,SO2,1.4,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,NOX,70.8,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,NO,47.3,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,NO2,23.5,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,PM10,80.0,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,SO2,1.9,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,WS,4.5,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,WD,331.0,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,O3,51.9,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,NOX,5.8,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,NO,0.8,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,NO2,5.0,1,True
+2025-01-17T16:00:00+02:00,Modiin,64,PM10,0.8,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,SO2,1.6,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,WS,1.3,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,WD,328.0,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,O3,40.8,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,NOX,13.6,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,NO,1.5,1,True
+2025-01-17T16:00:00+02:00,Carmei Yosef,76,NO2,12.1,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,SO2,1.5,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,WS,-9999.0,0,False
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,WD,-9999.0,0,False
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,StWd,-9999.0,0,False
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,O3,41.3,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,NOX,3.5,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,NO,0.6,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,NO2,2.9,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,Rain,-9999.0,2,False
+2025-01-17T16:00:00+02:00,Achisamach,78,SO2,0.5,1,True
+2025-01-17T16:00:00+02:00,Achisamach,78,WS,2.7,1,True
+2025-01-17T16:00:00+02:00,Achisamach,78,WD,319.0,1,True
+2025-01-17T16:00:00+02:00,Achisamach,78,O3,48.4,1,True
+2025-01-17T16:00:00+02:00,Achisamach,78,NOX,4.5,1,True
+2025-01-17T16:00:00+02:00,Achisamach,78,NO,0.8,1,True
+2025-01-17T16:00:00+02:00,Achisamach,78,NO2,3.8,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,SO2,1.6,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,WS,4.6,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,WD,351.0,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,O3,47.8,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,NOX,6.0,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,NO,0.9,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,NO2,5.1,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,Temp,-9999.0,0,False
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,RH,-9999.0,0,False
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,PM10,16.4,1,True
+2025-01-17T16:00:00+02:00,Beit Hashmonai,367,PM2.5,9.4,1,True
+2025-01-17T16:00:00+02:00,Yad Rambam New,338,SO2,0.6,1,True
+2025-01-17T16:00:00+02:00,Yad Rambam New,338,NOX,3.9,1,True
+2025-01-17T16:00:00+02:00,Yad Rambam New,338,NO,0.8,1,True
+2025-01-17T16:00:00+02:00,Yad Rambam New,338,NO2,3.1,1,True
+2025-01-17T16:00:00+02:00,Yad Rambam New,338,PM10,14.7,1,True
+2025-01-17T16:00:00+02:00,Yad Rambam New,338,PM2.5,8.35,1,True
+2025-01-17T16:00:00+02:00,Shchunat Haomanim,513,PM2.5,9.78,1,True
+2025-01-17T16:00:00+02:00,Shchunat Haomanim,513,PM10,19.9,1,True
+2025-01-17T16:00:00+02:00,Shchunat Haomanim,513,SO2,0.4,1,True
+2025-01-17T16:00:00+02:00,Shchunat Haomanim,513,NO,0.2,1,True
+2025-01-17T16:00:00+02:00,Shchunat Haomanim,513,NOX,4.4,1,True
+2025-01-17T16:00:00+02:00,Shchunat Haomanim,513,NO2,4.2,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,SO2,1.5,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,NO,0.7,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,NOX,3.7,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,NO2,3.1,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,O3,48.3,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,PM10,16.7,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,Temp,19.0,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,RH,61.0,1,True
+2025-01-17T16:00:00+02:00,Rehovot,32,Rain,0.0,1,True
+2025-01-17T16:00:00+02:00,Rishon,139,NO,3.4,1,True
+2025-01-17T16:00:00+02:00,Rishon,139,NOX,13.1,1,True
+2025-01-17T16:00:00+02:00,Rishon,139,NO2,9.8,1,True
+2025-01-17T16:00:00+02:00,Rishon,139,CO,0.7,1,True
+2025-01-17T16:00:00+02:00,Rishon,139,PM2.5,6.5,1,True
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NO,5.3,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NOX,19.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NO2,13.8,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,O3,44.7,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,PM10,-66.8,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,WS,1.2,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,WD,8.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,GSR,738.4,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,Rain,0.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,RH,59.2,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,Temp,15.0,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,StWd,42.8,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,PM2.5,-27.3,2,False
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NO,5.3,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NOX,19.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,NO2,13.8,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,O3,44.7,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,PM10,-66.8,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,WS,1.2,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,WD,8.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,GSR,738.4,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,Rain,0.0,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,RH,59.2,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,Temp,15.0,2,False
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,StWd,42.8,1,True
+2017-02-06T09:35:00+02:00,Modiin Hinanit,31,PM2.5,-27.3,2,False
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,SO2,1.4,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,NOX,70.8,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,NO,47.3,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,NO2,23.5,1,True
+2015-12-22T08:50:00+02:00,Yad Rambam 1,40,PM10,80.0,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,SO2,1.6,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,WS,6.3,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,WD,337.0,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,O3,53.3,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,NOX,4.0,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,NO,0.7,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,NO2,3.4,1,True
+2025-01-18T16:00:00+02:00,Modiin,64,PM10,22.0,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,SO2,1.3,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,WS,2.5,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,WD,324.0,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,O3,49.8,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,NOX,4.3,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,NO,0.8,1,True
+2025-01-18T16:00:00+02:00,Carmei Yosef,76,NO2,3.5,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,SO2,1.5,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,WS,-9999.0,0,False
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,WD,-9999.0,0,False
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,StWd,-9999.0,0,False
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,O3,41.3,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,NOX,3.5,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,NO,0.6,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,NO2,2.9,1,True
+2016-12-13T14:30:00+02:00,Kfar Shmuel,77,Rain,-9999.0,2,False
+2025-01-18T16:00:00+02:00,Achisamach,78,SO2,0.7,1,True
+2025-01-18T16:00:00+02:00,Achisamach,78,WS,3.0,1,True
+2025-01-18T16:00:00+02:00,Achisamach,78,WD,349.0,1,True
+2025-01-18T16:00:00+02:00,Achisamach,78,O3,49.4,1,True
+2025-01-18T16:00:00+02:00,Achisamach,78,NOX,3.9,1,True
+2025-01-18T16:00:00+02:00,Achisamach,78,NO,0.7,1,True
+2025-01-18T16:00:00+02:00,Achisamach,78,NO2,3.2,1,True
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,SO2,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,WS,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,WD,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,O3,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,NOX,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,NO,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,NO2,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,Temp,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,RH,-9999.0,0,False
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,PM10,10.9,1,True
+2025-01-18T16:15:00+02:00,Beit Hashmonai,367,PM2.5,8.5,1,True
+2025-01-18T16:15:00+02:00,Yad Rambam New,338,SO2,0.5,1,True
+2025-01-18T16:15:00+02:00,Yad Rambam New,338,NOX,3.6,1,True
+2025-01-18T16:15:00+02:00,Yad Rambam New,338,NO,0.5,1,True
+2025-01-18T16:15:00+02:00,Yad Rambam New,338,NO2,3.1,1,True
+2025-01-18T16:15:00+02:00,Yad Rambam New,338,PM10,16.0,1,True
+2025-01-18T16:15:00+02:00,Yad Rambam New,338,PM2.5,9.12,1,True
+2025-01-18T16:15:00+02:00,Shchunat Haomanim,513,PM2.5,10.48,1,True
+2025-01-18T16:15:00+02:00,Shchunat Haomanim,513,PM10,21.6,1,True
+2025-01-18T16:15:00+02:00,Shchunat Haomanim,513,SO2,0.5,1,True
+2025-01-18T16:15:00+02:00,Shchunat Haomanim,513,NO,0.1,1,True
+2025-01-18T16:15:00+02:00,Shchunat Haomanim,513,NOX,2.7,1,True
+2025-01-18T16:15:00+02:00,Shchunat Haomanim,513,NO2,2.6,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,SO2,1.5,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,NO,0.5,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,NOX,2.4,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,NO2,1.9,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,O3,49.5,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,PM10,10.2,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,Temp,17.9,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,RH,54.0,1,True
+2025-01-18T16:15:00+02:00,Rehovot,32,Rain,0.0,1,True
+2025-01-18T16:15:00+02:00,Rishon,139,NO,1.6,1,True
+2025-01-18T16:15:00+02:00,Rishon,139,NOX,6.9,1,True
+2025-01-18T16:15:00+02:00,Rishon,139,NO2,5.3,1,True
+2025-01-18T16:15:00+02:00,Rishon,139,CO,0.7,1,True
+2025-01-18T16:15:00+02:00,Rishon,139,PM2.5,-1.9,1,True
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
+Time,City,Id,parameter,value,status,valid
