@@ -67,12 +67,12 @@ class data_processor():
         return channels_parsed
 
 class data_plotter():
-    def plot_stations(self, stations_dgf):
+    def plot_stations(self, stations_gdf):
         fig = px.scatter_mapbox(
-            stations_dgf,
+            stations_gdf,
             lat="location.latitude",
             lon="location.longitude",
-            hover_name="shortName",  # optional: which column to display in hover
+            hover_name=2,  # optional: which column to display in hover
             color="red",  # optional: color points by a column
             zoom=4,
             mapbox_style="open-street-map"  # or "carto-positron", "stamen-terrain", etc.

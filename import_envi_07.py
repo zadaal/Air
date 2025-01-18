@@ -40,7 +40,7 @@ json_all_cities, json_all_cities_df = data_importer.stations()
 data_plotter = air_module.data_plotter()
 
 # Get and plot locations
-stations_gdf = data_importer.stations()
+stations_json, stations_gdf = data_importer.stations()
 data_plotter.plot_stations(stations_gdf)
 
 # READ SPECIFIC LOCATIONS FROM city_dic ===================================================================
