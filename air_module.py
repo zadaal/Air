@@ -25,8 +25,14 @@ class data_importer():
 
         json_all_cities = r_by_loc.json()
         json_all_cities_df = pd.DataFrame(json_all_cities)
+        json_all_cities_df[["latitude", "longitude"]] = pd.DataFrame(json_all_cities_df["location"].tolist(),
+                                                               index=json_all_cities_df.index)
+        json_all_cities_df["geometry"] = [
+            Point(xy) for xy in zip(json_all_cities_df["longitude"], json_all_cities_df["latitude"])
+        ]
+        json_all_cities_gdf = gpd.GeoDataFrame(json_all_cities_df, geometry="geometry", crs="EPSG:4326")
 
-        return json_all_cities, json_all_cities_df
+        return json_all_cities, json_all_cities_gdf
 
     def station_data(self, sttn_id):
         r_by_loc = requests.get('https://air-api.sviva.gov.il/v1/envista/stations/{}'.format(str(sttn_id)),
@@ -48,6 +54,16 @@ class data_importer():
         json_by_city_latest_df = data_processor_instance.json_to_df(json_by_city_latest)
         # Add city info
         json_by_city, json_by_city_df = self.station_data(sttn_id)
+        # Validate location in json_by_city_df
+        if (json_by_city_df["location.longitude"][0] == None):
+            json_by_city_df[["location.latitude", "location.longitude"]] = (
+                json_by_city_df["StationNotes"]
+                .str.extract(r"lat\s*:\s*([\d\.]+)\s*long\s*:\s*([\d\.]+)")
+                .astype(float)
+            )
+
+
+
         joined_df = pd.merge(json_by_city_df, json_by_city_latest_df, how="cross")
         # Convert to geodataframe
         geometry = [Point(xy) for xy in zip(joined_df["location.longitude"], joined_df["location.latitude"])]
@@ -70,11 +86,11 @@ class data_plotter():
     def plot_stations(self, stations_gdf):
         fig = px.scatter_mapbox(
             stations_gdf,
-            lat="location.latitude",
-            lon="location.longitude",
-            hover_name=2,  # optional: which column to display in hover
-            color="red",  # optional: color points by a column
-            zoom=4,
+            lat="latitude",
+            lon="longitude",
+            hover_name='shortName',  # optional: which column to display in hover
+            # color="red",  # optional: color points by a column
+            zoom=10,
             mapbox_style="open-street-map"  # or "carto-positron", "stamen-terrain", etc.
         )
 
