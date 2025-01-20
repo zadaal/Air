@@ -88,10 +88,15 @@ class data_plotter():
             stations_gdf,
             lat="latitude",
             lon="longitude",
-            hover_name='shortName',  # optional: which column to display in hover
+            hover_name='stationId',  # optional: which column to display in hover
+            hover_data = {
+                'name': True,
+                'active': True,
+                'owner': True,
+            },
             # color="red",  # optional: color points by a column
             zoom=10,
-            mapbox_style="open-street-map"  # or "carto-positron", "stamen-terrain", etc.
+            mapbox_style="carto-positron"  #"open-street-map" or "carto-positron", "stamen-terrain", etc.
         )
 
         fig.show()
