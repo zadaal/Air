@@ -41,8 +41,8 @@ data_plotter = air_module.data_plotter()
 
 # Get and plot locations
 stations_json, stations_gdf = data_importer.stations()
-data_plotter.plot_stations(stations_gdf)
-
+# data_plotter.plot_stations(stations_gdf)
+data_plotter.plot_stations_folium(stations_gdf)
 # READ SPECIFIC LOCATIONS FROM city_dic ===================================================================
 
 t_crnt = time.time()

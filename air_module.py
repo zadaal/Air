@@ -6,6 +6,8 @@ import geopandas as gpd
 from shapely.geometry import Point
 from urllib3.util.retry import Retry
 import plotly.express as px
+import folium
+import webbrowser
 """
 Main module with various functions of Air monitoring package
 Written By Alon
@@ -100,3 +102,9 @@ class data_plotter():
         )
 
         fig.show()
+
+    def plot_stations_folium(self, stations_gdf):
+        stations_gdf = stations_gdf.drop(columns=["monitors"])
+        map_widget = stations_gdf.explore(tiles="CartoDB positron")
+        map_widget.save("stations.html")
+        webbrowser.open("stations.html")
