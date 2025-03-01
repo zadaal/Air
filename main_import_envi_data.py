@@ -19,6 +19,7 @@ list_station_ids=[31, 40, 64, 76, 77, 78, 367, 338, 513, 32, 139]
 city_dic=dict()
 city_dic={
     31: 'Modiin Hinanit', # 31.90824, 35.00921
+    32: 'Rehovot',
     40: 'Yad Rambam 1', # Obsolete ?
     64: 'Modiin', # 31.89295205, 34.99531847
     76: 'Carmei Yosef', # 31.84661321, 34.91951304
@@ -26,7 +27,9 @@ city_dic={
     78: 'Achisamach', # 31.9350483, 34.90873938
     367: 'Beit Hashmonai', # 31.88952134, 34.91520583
     338: 'Yad Rambam New', # 31.90413031, 34.89581407
+    397: 'Mobile 7',
     513: 'Shchunat Haomanim', # 31.915084, 34.874771 (was #193)
+    514: 'Nesher',
     32: 'Rehovot',
     139: 'Rishon'
 }
