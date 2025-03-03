@@ -23,11 +23,14 @@ import pandas as pd
 from openpyxl import load_workbook
 import numpy as np
 import matplotlib.pyplot as plt
+"""
 from docx import Document
 from docx.shared import Inches
 from docx.shared import Pt
 from docx.enum.section import WD_ORIENT
+"""
 from Analize import AnalizeAirData
+
 plt.ion()
 
 

@@ -37,60 +37,69 @@ city_dic={
 # api_token = 'ApiToken 745356f0-5eee-4da8-aa71-b739f4acc081' # Alon
 api_token = 'ApiToken 1cab20bf-0248-493d-aedc-27aa94445d15' # Bahat
 # GET LIST OF ALL LOCATIONS ===================================================================
+# Instantiate your modules (adjust as needed)
 data_importer = air_module.data_importer(api_token)
 data_processor = air_module.data_processor()
-json_all_cities, json_all_cities_df = data_importer.stations()
 data_plotter = air_module.data_plotter()
 
-# Get and plot locations
+# Fetch and plot station locations
+json_all_cities, json_all_cities_df = data_importer.stations()
 stations_json, stations_gdf = data_importer.stations()
-# data_plotter.plot_stations(stations_gdf)
-data_plotter.plot_stations_folium(stations_gdf)
-# READ SPECIFIC LOCATIONS FROM city_dic ===================================================================
+if False:
+    data_plotter.plot_stations_folium(stations_gdf)
 
-t_crnt = time.time()
-dt_sec=.5*60
-t_next=0 #t_crnt+dt_sec
-flag_prfrm=1
-last_datetime='2021'
-teledata = tablib.Dataset()
-teledata_hdr = tablib.Dataset(headers=['Time','City','Id', 'parameter','value','status','valid'])
+# Prepare for data collection
+flag_prfrm = True
+last_datetime = '2021'
+
+# Initialize tablib dataset with header row
+teledata_hdr = tablib.Dataset(headers=['Time', 'City', 'Id', 'parameter', 'value', 'status', 'valid'])
 with open('output.csv', 'a+') as f:
     f.write(teledata_hdr.export('csv'))
+
 while flag_prfrm:
+    # Current timestamp just for reference/printing
+    print("Current timestamp:", time.time())
 
-    t_crnt = time.time()
-    if t_crnt>t_next:
-        print(t_crnt)
-        for sttn_id in list_station_ids:
-            json_by_city, json_by_city_df = data_importer.station_data(sttn_id)
-            city_data_latest_json, city_data_latest_df = data_importer.station_latest_data(sttn_id)
-            
-            latest_data = city_data_latest_json["data"][0]
-            datetime = latest_data["datetime"]
-            if datetime!=last_datetime:
-                # Parse data
-                city_data_latest_df = data_processor.json_to_df(city_data_latest_json)
+    # Loop over your stations and fetch latest data
+    for sttn_id in list_station_ids:
+        json_by_city, json_by_city_df = data_importer.station_data(sttn_id)
+        city_data_latest_json, city_data_latest_df = data_importer.station_latest_data(sttn_id)
 
-                # last_datetime=datetime
-                for i in range(0, len(latest_data["channels"])):
-                    print("name: ", latest_data["channels"][i]["name"], ", value:", latest_data["channels"][i]["value"])
-                    city_name=city_dic[city_data_latest_json["stationId"]]
-                    vec_values = (
-                        datetime, city_name, city_data_latest_json["stationId"], latest_data["channels"][i]["name"],
-                        latest_data["channels"][i]["value"], latest_data["channels"][i]["status"], latest_data["channels"][i]["valid"])
-                    teledata.append(vec_values)
+        latest_data = city_data_latest_json["data"][0]
+        datetime_value = latest_data["datetime"]
 
-        # with open('output.xlsx', 'ab') as f:
-        #     f.write(teledata.export('xlsx'))
-                with open('output.csv', 'a+', newline='') as f:
-                    f.write(teledata.export('csv'))
-                teledata = tablib.Dataset()
-        last_datetime = datetime
-        t_next = t_crnt + dt_sec
-    # t_crnt = time.time()
+        # Only record if there's a newer timestamp than the last one
+        if datetime_value != last_datetime:
+            city_data_latest_df = data_processor.json_to_df(city_data_latest_json)
+
+            # Build and store rows from the latest data
+            teledata = tablib.Dataset()
+            for channel in latest_data["channels"]:
+                print("Name:", channel["name"], ", Value:", channel["value"])
+                city_name = city_dic[city_data_latest_json["stationId"]]
+                vec_values = (
+                    datetime_value,
+                    city_name,
+                    city_data_latest_json["stationId"],
+                    channel["name"],
+                    channel["value"],
+                    channel["status"],
+                    channel["valid"]
+                )
+                teledata.append(vec_values)
+
+            # Append these rows to the CSV file
+            with open('output.csv', 'a+', newline='') as f:
+                f.write(teledata.export('csv'))
+
+            # Update last_datetime
+            last_datetime = datetime_value
+
+    # Sleep for 10 minutes before next acquisition
     time.sleep(10 * 60)
-a=1
+
+a = 1
 
 # import PyInstaller.__main__
 # PyInstaller.__main__.run([
