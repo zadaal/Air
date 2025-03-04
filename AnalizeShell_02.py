@@ -36,6 +36,7 @@ plt.ion()
 
 city_codes={
     31: 'Modiin Hinanit', # 31.90824, 35.00921
+    32: 'Rehovot',
     40: 'Yad Rambam 1', # Obsolete ?
     64: 'Modiin', # 31.89295205, 34.99531847
     76: 'Carmei Yosef', # 31.84661321, 34.91951304
@@ -43,7 +44,9 @@ city_codes={
     78: 'Achisamach', # 31.9350483, 34.90873938
     367: 'Beit Hashmonai', # 31.88952134, 34.91520583
     338: 'Yad Rambam New', # 31.90413031, 34.89581407
+    397: 'Mobile 7',
     513: 'Shchunat Haomanim', # 31.915084, 34.874771 (was #193)
+    514: 'Nesher',
     32: 'Rehovot',
     139: 'Rishon'
 }
@@ -67,9 +70,9 @@ analyze = AnalizeAirData() # Create instance
 # future_time = datetime.today() + dt.timedelta(days=1)  # Set the next time to wake up
 # yesterday = datetime.today() - dt.timedelta(days=1) # Calculate time window to analyze daily:
 # start_date_time_daily = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
-start_date_time_daily = datetime(2023, 3, 11, 0, 0, 0)
+start_date_time_daily = datetime(2025, 3, 1, 0, 0, 0)
 # end_date_time_daily = yesterday.replace(hour=23, minute=59, second=0, microsecond=0)
-end_date_time_daily = datetime(2023, 3, 15, 13, 30, 0)
+end_date_time_daily = datetime(2025, 3, 3, 22, 30, 0)
 daily_report_file_name = 'Daily_' + str(start_date_time_daily).replace(':', '-').replace(' ','-') + '_to_' + str(end_date_time_daily).replace(':', '-').replace(' ', '-')
 params_air=pd.read_excel('params_air.xlsx')
 params_air_tbl=pd.read_excel('params_air_TH.xlsx')

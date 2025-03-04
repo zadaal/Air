@@ -15,3 +15,8 @@
 /build/main_import_envi_data/xref-main_import_envi_data.html
 /output.csv
 /output.csv
+/__pycache__/air_module.cpython-312.pyc
+/__pycache__/Analize.cpython-312.pyc
+/dist/main_import_envi_data.exe
+/dist/stations.html
+/.gitignore
