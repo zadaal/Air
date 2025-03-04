@@ -2,10 +2,11 @@
 Air data analyze tools
 """
 import os.path
+import io
 import plotly.express as px
 px.set_mapbox_access_token(open("mapbox_token.txt").read())
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 import datetime as dt
 from datetime import date
 import pandas as pd
@@ -14,7 +15,7 @@ import matplotlib.pyplot as plt
 import requests
 plt.ion()
 
-from docx import Document
+from docx import Document # packegae name is python-docx
 from docx.shared import Inches
 from docx.shared import Pt
 from docx.enum.section import WD_ORIENT
@@ -173,41 +174,74 @@ class AnalizeAirData():
 
         return df, min_time_stamp_in_df, max_time_stamp_in_df, param_name_vec
 
+    def read_csv2df(self, csv_path, start_datetime=None, end_datetime=None):
+        # Read the entire file.
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        # Filter out lines that repeat the header "Time,City,Id,parameter,value,status,valid".
+        filtered_lines = [
+            line for line in lines
+            if not line.strip().startswith("Time,City,Id,parameter,value,status,valid")
+               and line.strip() != ""
+        ]
+
+        # Convert the filtered lines back to a single string so we can pass it to read_csv.
+        filtered_data_str = "\n".join(filtered_lines)
+
+        # Read the CSV data using pandas. Since we've removed the header lines,
+        # we can supply our own column names:
+        df = pd.read_csv(
+            io.StringIO(filtered_data_str),
+            header=None,  # tells pandas that there is no header line in the data
+            names=["Time", "City", "Id", "Parameter", "Value", "Status", "Valid"]
+        )
+
+        # Convert the "Time" column to a datetime (pandas will handle the ISO-like format).
+        df["Time"] = pd.to_datetime(df["Time"])
+        df["date_time"] = df["Time"].apply(lambda x: x.timestamp())
+        if (start_datetime is not None) and (end_datetime is not None):
+            df = df[(df['Time'] > start_datetime) & (df['Time'] < end_datetime)]
+
+        return df
+
     def moving_average_threshold(self, df, timeWindow, city, param, threshold, flagPlot):
         # Filter the dataframe to include only the specified city, id, and param
-        df_filtered = df[(df['City'] == city) & (df['param'] == param)]
+        df_filtered = df[(df['City'] == city) & (df['Parameter'] == param)]
+        timestamps = None
+        values = pd.DataFrame()
+        if len(df_filtered) > 0:
+            # Convert the 'Timestamp' column to a datetime object
+            # df_filtered['Timestamp'] = pd.to_datetime(df_filtered['date_time'])
+            df_filtered.loc[:,'Timestamp'] = pd.to_datetime(df_filtered.loc[:,'date_time'])
 
-        # Convert the 'Timestamp' column to a datetime object
-        # df_filtered['Timestamp'] = pd.to_datetime(df_filtered['date_time'])
-        df_filtered.loc[:,'Timestamp'] = pd.to_datetime(df_filtered.loc[:,'date_time'])
+            # Sort the dataframe by timestamp
+            df_filtered = df_filtered.sort_values('Timestamp')
 
-        # Sort the dataframe by timestamp
-        df_filtered = df_filtered.sort_values('Timestamp')
+            # Define a rolling window for the specified time period
+            window = pd.Timedelta(seconds=timeWindow)
 
-        # Define a rolling window for the specified time period
-        window = pd.Timedelta(seconds=timeWindow)
+            # Compute the rolling mean
+            rolling_mean = df_filtered.set_index('Timestamp').rolling(window).mean()
 
-        # Compute the rolling mean
-        rolling_mean = df_filtered.set_index('Timestamp').rolling(window).mean()
+            # Filter the rolling mean to include only the timestamps where the mean is above the threshold
+            threshold_mask = rolling_mean['value'] > threshold
+            rolling_mean_above_threshold = rolling_mean[threshold_mask]
 
-        # Filter the rolling mean to include only the timestamps where the mean is above the threshold
-        threshold_mask = rolling_mean['value'] > threshold
-        rolling_mean_above_threshold = rolling_mean[threshold_mask]
+            # Extract the timestamps and values where the rolling mean is above the threshold
+            timestamps = rolling_mean_above_threshold.index.strftime('%Y-%m-%d %H:%M:%S')
+            values = rolling_mean_above_threshold['value'].tolist()
 
-        # Extract the timestamps and values where the rolling mean is above the threshold
-        timestamps = rolling_mean_above_threshold.index.strftime('%Y-%m-%d %H:%M:%S')
-        values = rolling_mean_above_threshold['value'].tolist()
-
-        if flagPlot:
-            plt.figure()
-            plt.plot(df_filtered['Timestamp'], df_filtered['value'], 'o-b')
-            plt.plot(rolling_mean.index, rolling_mean['value'], 'o-r')
-            plt.hlines(threshold, df_filtered['Timestamp'].min(), df_filtered['Timestamp'].max(), label='Threshold',
-                       colors='r')
-            plt.title(f'{param} in {city} with threshold {threshold}, within {timeWindow/(60*60)} hours')
-            plt.grid()
-            plt.show()
-            plt.ion()
+            if flagPlot:
+                plt.figure()
+                plt.plot(df_filtered['Timestamp'], df_filtered['value'], 'o-b')
+                plt.plot(rolling_mean.index, rolling_mean['value'], 'o-r')
+                plt.hlines(threshold, df_filtered['Timestamp'].min(), df_filtered['Timestamp'].max(), label='Threshold',
+                           colors='r')
+                plt.title(f'{param} in {city} with threshold {threshold}, within {timeWindow/(60*60)} hours')
+                plt.grid()
+                plt.show()
+                plt.ion()
 
 
         return timestamps, values
@@ -216,7 +250,7 @@ class AnalizeAirData():
         # Get the time window of T seconds
         log_filename = 'log_params.xlsx'
         start_time = datetime.now() - dt.timedelta(seconds=T)
-        df_window = df[df['date_time'] >= start_time]
+        df_window = df[df['Time'] >= start_time.strftime("%Y-%m-%dT%H:%M:%S%z")]
         if timeWindowStr == 'israel_half_hr':
             timeWindowSec = 0.5 * 60 * 60
         elif timeWindowStr == 'israel_hr':
