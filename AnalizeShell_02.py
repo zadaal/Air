@@ -29,7 +29,8 @@ from docx.shared import Inches
 from docx.shared import Pt
 from docx.enum.section import WD_ORIENT
 """
-from Analize import AnalizeAirData
+# from Analize import AnalizeAirData
+from air_module import data_analyzer as AnalizeAirData
 
 plt.ion()
 
@@ -123,7 +124,7 @@ if __name__ == "__main__":
     # start_date_time_daily = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
     start_date_time_daily = datetime(2025, 3, 1, 0, 0, 0)
     # end_date_time_daily = yesterday.replace(hour=23, minute=59, second=0, microsecond=0)
-    end_date_time_daily = datetime(2025, 3, 3, 22, 30, 0)
+    end_date_time_daily = datetime(2025, 3, 5, 22, 30, 0)
     daily_report_file_name = 'Daily_' + str(start_date_time_daily).replace(':', '-').replace(' ', '-') + '_to_' + str(
         end_date_time_daily).replace(':', '-').replace(' ', '-')
     params_air = pd.read_excel('params_air.xlsx')
@@ -144,13 +145,13 @@ if __name__ == "__main__":
                                                                                                 start_timestamp,
                                                                                                 end_timestamp)
     """
-    df = analyze.read_csv2df(csv_file_name, start_datetime="2025-01-17T16:00:00+02:00", end_datetime="2025-03-17T16:00:00+02:00")
+    df = analyze.read_csv2df(csv_file_name, start_datetime=start_date_time_daily, end_datetime=end_date_time_daily)
 
 
     city_ids = df['Id'].unique()
 
     #======== RUN BY DEMAND ========================================================================================
-    param_names_2_anlz_vec =  ['PM2.5','PM10'] #['PM2.5','PM10'] # param_name_vec
+    param_names_2_anlz_vec =  ['SO2'] #['PM2.5','PM10'] # param_name_vec
     analyze.run_analyze_T(params_air_tbl, city_ids, df, 'israel_24hr', city_codes, param_names_2_anlz_vec, T = 11*24*60*60, flagPlot=True)
 
     #======== RUN SCHEDULED ========================================================================================

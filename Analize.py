@@ -199,50 +199,62 @@ class AnalizeAirData():
 
         # Convert the "Time" column to a datetime (pandas will handle the ISO-like format).
         df["Time"] = pd.to_datetime(df["Time"])
+        df['Time'] = df['Time'].dt.tz_localize(None)  # convert it to UTC
         df["date_time"] = df["Time"].apply(lambda x: x.timestamp())
         if (start_datetime is not None) and (end_datetime is not None):
             df = df[(df['Time'] > start_datetime) & (df['Time'] < end_datetime)]
 
+        # Remove unvalid data:
+        df = df[df['Valid'] == True]
         return df
 
     def moving_average_threshold(self, df, timeWindow, city, param, threshold, flagPlot):
-        # Filter the dataframe to include only the specified city, id, and param
-        df_filtered = df[(df['City'] == city) & (df['Parameter'] == param)]
-        timestamps = None
-        values = pd.DataFrame()
-        if len(df_filtered) > 0:
-            # Convert the 'Timestamp' column to a datetime object
-            # df_filtered['Timestamp'] = pd.to_datetime(df_filtered['date_time'])
-            df_filtered.loc[:,'Timestamp'] = pd.to_datetime(df_filtered.loc[:,'date_time'])
+        """
+        df : DataFrame that has columns ['Time', 'City', 'Parameter', 'Value']
+             and where 'Time' is already a datetime type.
+        timeWindow : window size in seconds for the rolling mean
+        city : city name to filter
+        param : parameter name to filter
+        threshold : threshold to compare the rolling mean against
+        flagPlot : boolean indicating whether to show a matplotlib plot
+        """
+        # 1. Filter the DataFrame
+        df_filtered = df[(df['City'] == city) & (df['Parameter'] == param)].copy()
+        if df_filtered.empty:
+            return None, []
 
-            # Sort the dataframe by timestamp
-            df_filtered = df_filtered.sort_values('Timestamp')
+        # 2. Sort by "Time"
+        df_filtered = df_filtered.sort_values('Time')
 
-            # Define a rolling window for the specified time period
-            window = pd.Timedelta(seconds=timeWindow)
+        # 3. Set "Time" as the index to enable time-based rolling
+        df_filtered = df_filtered.set_index('Time')
 
-            # Compute the rolling mean
-            rolling_mean = df_filtered.set_index('Timestamp').rolling(window).mean()
+        # 4. Convert the timeWindow (in seconds) to a pandas Timedelta
+        window = pd.Timedelta(seconds=timeWindow)
 
-            # Filter the rolling mean to include only the timestamps where the mean is above the threshold
-            threshold_mask = rolling_mean['value'] > threshold
-            rolling_mean_above_threshold = rolling_mean[threshold_mask]
+        # 5. Compute the rolling mean for the "Value" column
+        rolling_mean = df_filtered['Value'].rolling(window=window).mean()
 
-            # Extract the timestamps and values where the rolling mean is above the threshold
-            timestamps = rolling_mean_above_threshold.index.strftime('%Y-%m-%d %H:%M:%S')
-            values = rolling_mean_above_threshold['value'].tolist()
+        # 6. Identify rows where the rolling mean is above the threshold
+        threshold_mask = rolling_mean > threshold
+        rolling_mean_above_threshold = rolling_mean[threshold_mask]
 
-            if flagPlot:
-                plt.figure()
-                plt.plot(df_filtered['Timestamp'], df_filtered['value'], 'o-b')
-                plt.plot(rolling_mean.index, rolling_mean['value'], 'o-r')
-                plt.hlines(threshold, df_filtered['Timestamp'].min(), df_filtered['Timestamp'].max(), label='Threshold',
-                           colors='r')
-                plt.title(f'{param} in {city} with threshold {threshold}, within {timeWindow/(60*60)} hours')
-                plt.grid()
-                plt.show()
-                plt.ion()
+        # 7. Extract timestamps and values where above threshold
+        timestamps = rolling_mean_above_threshold.index.strftime('%Y-%m-%d %H:%M:%S')
+        values = rolling_mean_above_threshold.tolist()
 
+        # Optional: plotting
+        if flagPlot:
+            plt.figure()
+            plt.plot(df_filtered.index, df_filtered['Value'], 'o-b', label='Original Values')
+            plt.plot(rolling_mean.index, rolling_mean, 'o-r', label='Rolling Mean')
+            plt.axhline(threshold, linestyle='--', label='Threshold', color='r')
+            plt.title(f'{param} in {city}, threshold {threshold}, window={timeWindow / 3600} hours')
+            plt.legend()
+            plt.grid()
+            plt.show(block=True)
+            # plt.show()
+            # plt.ion()
 
         return timestamps, values
 

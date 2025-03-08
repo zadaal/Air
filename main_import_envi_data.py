@@ -43,10 +43,9 @@ data_processor = air_module.data_processor()
 data_plotter = air_module.data_plotter()
 
 # Fetch and plot station locations
-json_all_cities, json_all_cities_df = data_importer.stations()
-stations_json, stations_gdf = data_importer.stations()
+all_cities_json, all_cities_df = data_importer.get_stations_info()
 if False:
-    data_plotter.plot_stations_folium(stations_gdf)
+    data_plotter.plot_stations_folium(all_cities_df)
 
 # Prepare for data collection
 flag_prfrm = True
