@@ -31,7 +31,7 @@ from docx.enum.section import WD_ORIENT
 """
 # from Analize import AnalizeAirData
 from air_module import data_analyzer as AnalizeAirData
-from air_module import data_importer
+from air_module import data_importer, data_plotter
 
 plt.ion()
 
@@ -81,9 +81,10 @@ if __name__ == "__main__":
     # future_time = datetime.today() + dt.timedelta(days=1)  # Set the next time to wake up
     # yesterday = datetime.today() - dt.timedelta(days=1) # Calculate time window to analyze daily:
     # start_date_time_daily = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
-    start_date_time_daily = datetime(2025, 3, 1, 0, 0, 0)
+    start_date_time_daily = datetime(2025, 1, 1, 0, 0, 0)
     # end_date_time_daily = yesterday.replace(hour=23, minute=59, second=0, microsecond=0)
-    end_date_time_daily = datetime(2025, 3, 5, 22, 30, 0)
+    end_date_time_daily = datetime(2025, 3, 11, 0, 0, 0)
+    T_window_back_sec = 2*24*60*60 # 14*24*60*60
     daily_report_file_name = 'Daily_' + str(start_date_time_daily).replace(':', '-').replace(' ', '-') + '_to_' + str(
         end_date_time_daily).replace(':', '-').replace(' ', '-')
     params_air = pd.read_excel('params_air.xlsx')
@@ -104,21 +105,24 @@ if __name__ == "__main__":
                                                                                                 start_timestamp,
                                                                                                 end_timestamp)
     """
-    df = analyze.read_csv2df(csv_file_name, start_datetime=start_date_time_daily, end_datetime=end_date_time_daily)
+    gdf = analyze.read_csv2df(csv_file_name, start_datetime=start_date_time_daily, end_datetime=end_date_time_daily, export_to_excel=False)
 
+    # plotter = data_plotter()
+    # wd = gdf[gdf['Parameter'] == 'WD']['Value'].to_numpy()
+    # plotter.plot_polar_wind_hist(wd)
 
-    city_ids = df['Id'].unique()
+    city_ids = gdf['Id'].unique()
 
     #======== RUN BY DEMAND ========================================================================================
-    param_names_2_anlz_vec =  ['SO2'] #['PM2.5','PM10'] # param_name_vec
-    analyze.run_analyze_T(params_air_tbl, city_ids, df, 'israel_24hr', city_codes, param_names_2_anlz_vec, 11*24*60*60, True)
+    param_names_2_anlz_vec =  ['WD'] #['PM2.5','PM10'] # param_name_vec
+    analyze.run_analyze_T(params_air_tbl, city_ids, gdf, 'israel_24hr', city_codes, param_names_2_anlz_vec, T_window_back_sec, True)
 
     #======== RUN SCHEDULED ========================================================================================
     param_name_vec = ['PM2.5','PM10']
     # Run every day analize in time windows of half an hour, hour, 8 hours:
-    schedule.every().day.at("00:45").do(analyze.run_analyze_T, params_air_tbl, city_ids, df, 'israel_half_hr', city_codes, param_name_vec, T=24*60*60, flagPlot=False)
-    schedule.every().day.at("00:46").do(analyze.run_analyze_T, params_air_tbl, city_ids, df, 'israel_hr', city_codes, param_name_vec, T=24*60*60, flagPlot=False)
-    schedule.every().day.at("00:47").do(analyze.run_analyze_T, params_air_tbl, city_ids, df, 'israel_8hr', city_codes, param_name_vec, T=24*60*60, flagPlot=False)
+    schedule.every().day.at("00:45").do(analyze.run_analyze_T, params_air_tbl, city_ids, gdf, 'israel_half_hr', city_codes, param_name_vec, T=24 * 60 * 60, flagPlot=False)
+    schedule.every().day.at("00:46").do(analyze.run_analyze_T, params_air_tbl, city_ids, gdf, 'israel_hr', city_codes, param_name_vec, T=24 * 60 * 60, flagPlot=False)
+    schedule.every().day.at("00:47").do(analyze.run_analyze_T, params_air_tbl, city_ids, gdf, 'israel_8hr', city_codes, param_name_vec, T=24 * 60 * 60, flagPlot=False)
 
     # Run the scheduled functions
     while True:

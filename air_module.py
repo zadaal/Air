@@ -4,11 +4,12 @@ import time
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
+from shapely import wkt
 from urllib3.util.retry import Retry
 import plotly.express as px
 import folium
 import webbrowser
-
+import os
 import csv
 from datetime import datetime, timezone, date
 import datetime as dt
@@ -20,12 +21,16 @@ from docx import Document # packegae name is python-docx
 from docx.shared import Inches
 from docx.shared import Pt
 from docx.enum.section import WD_ORIENT
+import matplotlib
+matplotlib.use("TkAgg")
 import io
+
 plt.ion()
 """
 Main module with various functions of Air monitoring package
 Written By Alon
 """
+
 
 class data_importer():
     def __init__(self, api_token='ApiToken 1cab20bf-0248-493d-aedc-27aa94445d15'):
@@ -250,7 +255,7 @@ class data_analyzer():
 
         return df, min_time_stamp_in_df, max_time_stamp_in_df, param_name_vec
 
-    def read_csv2df(self, csv_path, start_datetime=None, end_datetime=None):
+    def read_csv2df(self, csv_path, start_datetime=None, end_datetime=None, export_to_excel=False):
         # Read the entire file.
         with open(csv_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -288,10 +293,15 @@ class data_analyzer():
         all_cities_json, all_cities_df = data_importer_inst.get_stations_info()
         all_cities_df['Id'] = all_cities_df['stationId']
         df_merged = pd.merge(df, all_cities_df, on='Id', how='left')
+
+        # Convert to geodataframe:
+        gdf_merged = gpd.GeoDataFrame(df_merged, geometry='geometry')
+        gdf_merged.set_crs(epsg=4326, inplace=True)
         # Export df to excel:
-        output_file = 'window_data.xlsx'
-        df_merged.to_excel(output_file, index=False)
-        return df_merged
+        if export_to_excel:
+            output_file = 'window_data.xlsx'
+            gdf_merged.to_excel(output_file, index=False)
+        return gdf_merged
 
     def moving_average_threshold(self, df, timeWindow, city, param, threshold, flagPlot):
         """
@@ -344,6 +354,8 @@ class data_analyzer():
         return timestamps, values
 
     def run_analyze_T(self, params_air_tbl, city_ids, df, timeWindowStr, city_codes, param_name_vec, T, flagPlot):
+        plotter = data_plotter()
+
         # Get the time window of T seconds
         log_filename = 'log_params.xlsx'
         start_time = datetime.now() - dt.timedelta(seconds=T)
@@ -363,35 +375,43 @@ class data_analyzer():
             for crnt_city in city_ids:
                 # Run the analysis on the time window
                 city_name = city_codes.get(crnt_city, 'default_value')
-                timestamps, values = self.moving_average_threshold(df_window, timeWindow=timeWindowSec,
-                                                                   city=city_name, param=crnt_param,
-                                                                   threshold=thresholdValue, flagPlot=flagPlot)
-                plt.ion()
-                # Save the result to a log file
-                if len(values) != 0:
-                    log_df = pd.DataFrame({'Report Date': [datetime.now().strftime("%Y-%m-%d")],
-                                           'Report Time': [datetime.now().strftime("%H:%M:%S")],
-                                           'Time Window': timeWindowStr,
-                                           'Station Name': city_name,
-                                           'Parameter': crnt_param,
-                                           'Time Stamps': [timestamps],
-                                           'Values': [values],
-                                           'TH Value': [thresholdValue]})
-                    if os.path.isfile(log_filename):
-                        existing_data = pd.read_excel(log_filename)
-                        new_data = pd.concat([existing_data, log_df], ignore_index=True)
-                        new_data.to_excel(log_filename, index=False)
+                if crnt_param=='WD':
+                    wd = df_window[(df_window['Parameter'] == crnt_param) & (df_window['City'] == city_name)]['Value'].to_numpy()
+                    tw = df_window[(df_window['Parameter'] == crnt_param) & (df_window['City'] == city_name)]['Time']
+                    if len(wd) != 0:
+                        min_timestamp_str = tw.min().strftime('%Y-%m-%d %H:%M:%S')
+                        max_timestamp_str = tw.max().strftime('%Y-%m-%d %H:%M:%S')
+                        plotter.plot_polar_wind_hist(wind_direction_deg=wd, city_name=city_name, start_time=min_timestamp_str, end_time = max_timestamp_str)
+                else:
+                    timestamps, values = self.moving_average_threshold(df_window, timeWindow=timeWindowSec,
+                                                                       city=city_name, param=crnt_param,
+                                                                       threshold=thresholdValue, flagPlot=flagPlot)
+                    plt.ion()
+                    # Save the result to a log file
+                    if len(values) != 0:
+                        log_df = pd.DataFrame({'Report Date': [datetime.now().strftime("%Y-%m-%d")],
+                                               'Report Time': [datetime.now().strftime("%H:%M:%S")],
+                                               'Time Window': timeWindowStr,
+                                               'Station Name': city_name,
+                                               'Parameter': crnt_param,
+                                               'Time Stamps': [timestamps],
+                                               'Values': [values],
+                                               'TH Value': [thresholdValue]})
+                        if os.path.isfile(log_filename):
+                            existing_data = pd.read_excel(log_filename)
+                            new_data = pd.concat([existing_data, log_df], ignore_index=True)
+                            new_data.to_excel(log_filename, index=False)
 
-                        # # Append data to an existing Excel file with openpyxl
-                        # with pd.ExcelWriter(log_filename, engine='openpyxl', mode='a') as writer:
-                        #     log_df.to_excel(writer, sheet_name='Sheet2')
-                    else:
-                        log_df.to_excel(log_filename, index=False)
-                        # # Create a new Excel file with xlsxwriter
-                        # with pd.ExcelWriter(log_filename, engine='xlsxwriter') as writer:
-                        #     log_df.to_excel(writer, sheet_name='Sheet1')
+                            # # Append data to an existing Excel file with openpyxl
+                            # with pd.ExcelWriter(log_filename, engine='openpyxl', mode='a') as writer:
+                            #     log_df.to_excel(writer, sheet_name='Sheet2')
+                        else:
+                            log_df.to_excel(log_filename, index=False)
+                            # # Create a new Excel file with xlsxwriter
+                            # with pd.ExcelWriter(log_filename, engine='xlsxwriter') as writer:
+                            #     log_df.to_excel(writer, sheet_name='Sheet1')
 
-                    # return timestamps, values
+                        # return timestamps, values
 
 class data_plotter():
     def plot_stations(self, stations_gdf):
@@ -417,3 +437,35 @@ class data_plotter():
         map_widget = stations_gdf.explore(tiles="CartoDB positron")
         map_widget.save("stations.html")
         webbrowser.open("stations.html")
+
+    def plot_polar_wind_hist(self, wind_direction_deg, city_name, start_time=None, end_time=None):
+        if len(wind_direction_deg) != 0:
+            # Convert direction so the arrows shows the destination rather than source:
+            wind_direction_corrected_deg = (wind_direction_deg + 180) % 360  # Ensure 0-360 degrees
+            # Convert to radians for plotting
+            wind_direction_corrected_rad = np.deg2rad(wind_direction_corrected_deg)
+            num_bins = 36  # 10-degree bins
+            bins = np.linspace(0, 2 * np.pi, num_bins + 1)  # Bins in radians
+
+            # Compute histogram (count occurrences in each bin)
+            hist, _ = np.histogram(wind_direction_corrected_rad, bins=bins)
+
+            # Normalize (optional)
+            hist = hist / np.max(hist)  # Normalize to max value
+
+            # Plot
+            fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+            ax.set_theta_zero_location('N')  # North is at the top
+            ax.set_theta_direction(-1)  # Clockwise angles
+
+            # Plot histogram bars
+            bars = ax.bar(bins[:-1], hist, width=(2 * np.pi / num_bins), bottom=0.0, color='b', alpha=0.6,
+                          edgecolor='black')
+
+            # Labels
+            if start_time==None:
+                ax.set_title("Winds directions at " + city_name, fontsize=14)
+            else:
+                ax.set_title("Winds directions at " + city_name + ' from: ' + start_time + ' to: ' + end_time, fontsize=14)
+            plt.show()
+
