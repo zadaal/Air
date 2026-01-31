@@ -1,0 +1,30 @@
+#!/bin/sh
+
+#
+# Gradle wrapper script for Unix
+#
+
+# Determine the script's directory
+APP_HOME=$(cd "$(dirname "$0")" && pwd -P)
+
+# Add default JVM options
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Gradle wrapper jar location
+WRAPPER_JAR="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+
+# Check for Java
+if [ -n "$JAVA_HOME" ]; then
+    JAVACMD="$JAVA_HOME/bin/java"
+else
+    JAVACMD="java"
+fi
+
+# Download gradle wrapper jar if it doesn't exist
+if [ ! -f "$WRAPPER_JAR" ]; then
+    echo "Downloading Gradle Wrapper..."
+    mkdir -p "$APP_HOME/gradle/wrapper"
+    curl -L -o "$WRAPPER_JAR" "https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar"
+fi
+
+exec "$JAVACMD" $DEFAULT_JVM_OPTS -jar "$WRAPPER_JAR" "$@"
