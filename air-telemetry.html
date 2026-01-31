@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#1976D2">
+    <title>Air Telemetry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --text: #212121;
+            --text-secondary: #757575;
+            --good: #4CAF50;
+            --moderate: #FFEB3B;
+            --unhealthy-sensitive: #FF9800;
+            --unhealthy: #F44336;
+            --very-unhealthy: #9C27B0;
+            --hazardous: #6D1B1B;
+            --unknown: #9E9E9E;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header-back {
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-back.visible {
+            display: flex;
+        }
+
+        .header-title.hidden {
+            display: none;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* Search */
+        .search-container {
+            padding: 12px 16px;
+            background: var(--surface);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Error */
+        .error {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .error-message {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Station List */
+        .station-list {
+            padding: 12px 16px;
+        }
+
+        .station-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .station-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .station-card:active {
+            transform: scale(0.98);
+        }
+
+        .station-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .station-region {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .station-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .station-id {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .station-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .station-status.active {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .station-status.inactive {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Station Detail */
+        .detail-view {
+            display: none;
+        }
+
+        .detail-view.visible {
+            display: block;
+        }
+
+        .list-view.hidden {
+            display: none;
+        }
+
+        .station-header {
+            background: var(--surface);
+            padding: 20px 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .station-header h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .station-location {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .last-updated {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Category Filters */
+        .filters {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            overflow-x: auto;
+            background: var(--surface);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            background: var(--surface);
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Readings */
+        .readings-container {
+            padding: 16px;
+        }
+
+        .readings-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .reading-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .reading-indicator {
+            width: 12px;
+            height: 48px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .reading-indicator.good { background: var(--good); }
+        .reading-indicator.moderate { background: var(--moderate); }
+        .reading-indicator.unhealthy-sensitive { background: var(--unhealthy-sensitive); }
+        .reading-indicator.unhealthy { background: var(--unhealthy); }
+        .reading-indicator.very-unhealthy { background: var(--very-unhealthy); }
+        .reading-indicator.hazardous { background: var(--hazardous); }
+        .reading-indicator.unknown { background: var(--unknown); }
+
+        .reading-content {
+            flex: 1;
+        }
+
+        .reading-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .reading-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .reading-value {
+            text-align: right;
+        }
+
+        .reading-number {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .reading-unit {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .reading-status {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .reading-status.good { background: #E8F5E9; color: #2E7D32; }
+        .reading-status.moderate { background: #FFFDE7; color: #F57F17; }
+        .reading-status.unhealthy-sensitive { background: #FFF3E0; color: #E65100; }
+        .reading-status.unhealthy { background: #FFEBEE; color: #C62828; }
+        .reading-status.very-unhealthy { background: #F3E5F5; color: #7B1FA2; }
+        .reading-status.hazardous { background: #3E2723; color: #FFCCBC; }
+        .reading-status.unknown { background: #EEEEEE; color: #616161; }
+
+        /* Legend */
+        .legend {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Refresh button */
+        .refresh-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .refresh-fab:active {
+            transform: scale(0.95);
+        }
+
+        .refresh-fab.spinning svg {
+            animation: spin 1s linear infinite;
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title" id="headerTitle">
+            <h1>Air Telemetry</h1>
+        </div>
+        <div class="header-back" id="headerBack">
+            <button class="back-btn" onclick="showList()">←</button>
+            <h1 id="detailTitle">Station Details</h1>
+        </div>
+    </div>
+
+    <!-- List View -->
+    <div class="list-view" id="listView">
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search stations...">
+        </div>
+
+        <div id="stationListContainer">
+            <div class="loading" id="listLoading">
+                <div class="spinner"></div>
+                <p class="loading-text">Loading stations...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail View -->
+    <div class="detail-view" id="detailView">
+        <div class="station-header" id="stationHeader">
+            <!-- Populated by JS -->
+        </div>
+
+        <div class="filters" id="filters">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="air">Air Quality</button>
+            <button class="filter-chip" data-filter="meteo">Meteorological</button>
+        </div>
+
+        <div class="readings-container" id="readingsContainer">
+            <div class="loading" id="detailLoading">
+                <div class="spinner"></div>
+                <p class="loading-text">Loading readings...</p>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-title">Air Quality Index</div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--good)"></div>
+                <span class="legend-text">Good - Air quality is satisfactory</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--moderate)"></div>
+                <span class="legend-text">Moderate - Acceptable air quality</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--unhealthy-sensitive)"></div>
+                <span class="legend-text">Unhealthy for Sensitive Groups</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--unhealthy)"></div>
+                <span class="legend-text">Unhealthy - Health effects possible</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--very-unhealthy)"></div>
+                <span class="legend-text">Very Unhealthy - Health alert</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--hazardous)"></div>
+                <span class="legend-text">Hazardous - Emergency conditions</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refresh FAB -->
+    <button class="refresh-fab" id="refreshBtn" onclick="refresh()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+    </button>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'https://air-api.sviva.gov.il/v1/envista';
+        const API_TOKEN = '1cab20bf-0248-493d-aedc-27aa94445d15';
+        const CORS_PROXY = 'https://corsproxy.io/?';
+
+        // State
+        let stations = [];
+        let currentStation = null;
+        let currentReadings = [];
+        let currentFilter = 'all';
+
+        // Air quality thresholds
+        const thresholds = {
+            'PM2.5': { good: 12, moderate: 35.4, unhealthySensitive: 55.4, unhealthy: 150.4, veryUnhealthy: 250.4 },
+            'PM10': { good: 54, moderate: 154, unhealthySensitive: 254, unhealthy: 354, veryUnhealthy: 424 },
+            'O3': { good: 54, moderate: 70, unhealthySensitive: 85, unhealthy: 105, veryUnhealthy: 200 },
+            'NO2': { good: 53, moderate: 100, unhealthySensitive: 360, unhealthy: 649, veryUnhealthy: 1249 },
+            'SO2': { good: 35, moderate: 75, unhealthySensitive: 185, unhealthy: 304, veryUnhealthy: 604 },
+            'CO': { good: 4.4, moderate: 9.4, unhealthySensitive: 12.4, unhealthy: 15.4, veryUnhealthy: 30.4 },
+            'NOX': { good: 100, moderate: 200, unhealthySensitive: 400, unhealthy: 600, veryUnhealthy: 1000 },
+            'NO': { good: 50, moderate: 100, unhealthySensitive: 200, unhealthy: 400, veryUnhealthy: 800 }
+        };
+
+        const meteoParams = ['WS', 'WD', 'Temp', 'Temperature', 'RH', 'Humidity', 'Rain', 'GSR', 'StWd', 'BP', 'Pressure', 'SR'];
+
+        // Parameter descriptions
+        const paramDescriptions = {
+            'PM2.5': 'Fine particulate matter (≤2.5μm)',
+            'PM10': 'Coarse particulate matter (≤10μm)',
+            'O3': 'Ozone',
+            'NO2': 'Nitrogen dioxide',
+            'NO': 'Nitrogen monoxide',
+            'NOX': 'Nitrogen oxides (total)',
+            'SO2': 'Sulfur dioxide',
+            'CO': 'Carbon monoxide',
+            'WS': 'Wind speed',
+            'WD': 'Wind direction',
+            'Temp': 'Temperature',
+            'RH': 'Relative humidity',
+            'Rain': 'Precipitation',
+            'GSR': 'Global solar radiation',
+            'BP': 'Barometric pressure',
+            'SR': 'Solar radiation'
+        };
+
+        // Fetch with CORS proxy
+        async function fetchAPI(endpoint) {
+            const url = `${CORS_PROXY}${encodeURIComponent(API_BASE + endpoint)}`;
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `ApiToken ${API_TOKEN}`,
+                    'envi-data-source': 'MANA'
+                }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+        }
+
+        // Get air quality status
+        function getStatus(paramName, value) {
+            if (value == null || value < 0 || value === -9999) return 'unknown';
+
+            const normalized = normalizeParamName(paramName);
+            const threshold = thresholds[normalized];
+            if (!threshold) return 'unknown';
+
+            if (value <= threshold.good) return 'good';
+            if (value <= threshold.moderate) return 'moderate';
+            if (value <= threshold.unhealthySensitive) return 'unhealthy-sensitive';
+            if (value <= threshold.unhealthy) return 'unhealthy';
+            if (value <= threshold.veryUnhealthy) return 'very-unhealthy';
+            return 'hazardous';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'good': 'Good',
+                'moderate': 'Moderate',
+                'unhealthy-sensitive': 'Sensitive',
+                'unhealthy': 'Unhealthy',
+                'very-unhealthy': 'Very Unhealthy',
+                'hazardous': 'Hazardous',
+                'unknown': 'N/A'
+            };
+            return labels[status] || status;
+        }
+
+        function normalizeParamName(name) {
+            if (name.includes('PM2.5') || name.includes('PM25')) return 'PM2.5';
+            if (name.includes('PM10')) return 'PM10';
+            if (name.includes('O3') || name.toLowerCase().includes('ozone')) return 'O3';
+            if (name.includes('NO2')) return 'NO2';
+            if (name.includes('SO2')) return 'SO2';
+            if (name === 'CO') return 'CO';
+            if (name.includes('NOX') || name.includes('NOx')) return 'NOX';
+            if (name === 'NO') return 'NO';
+            return name;
+        }
+
+        function isMeteoParam(name) {
+            return meteoParams.some(p => name.toLowerCase().includes(p.toLowerCase()));
+        }
+
+        function getDescription(name) {
+            const normalized = normalizeParamName(name);
+            return paramDescriptions[normalized] || paramDescriptions[name] || name;
+        }
+
+        // Load stations
+        async function loadStations() {
+            const container = document.getElementById('stationListContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Loading stations...</p>
+                </div>
+            `;
+
+            try {
+                const data = await fetchAPI('/stations');
+                stations = data.filter(s => s.active);
+                renderStationList(stations);
+            } catch (error) {
+                console.error('Error loading stations:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <div class="error-icon">⚠️</div>
+                        <p class="error-message">Failed to load stations: ${error.message}</p>
+                        <button class="retry-btn" onclick="loadStations()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render station list
+        function renderStationList(stationList) {
+            const container = document.getElementById('stationListContainer');
+
+            if (stationList.length === 0) {
+                container.innerHTML = '<div class="no-results">No stations found</div>';
+                return;
+            }
+
+            const html = `
+                <div class="station-list">
+                    ${stationList.map(station => `
+                        <div class="station-card" onclick="showStation(${station.stationId})">
+                            <div class="station-name">${station.name || 'Station ' + station.stationId}</div>
+                            <div class="station-region">${station.region || station.city || 'Israel'}</div>
+                            <div class="station-meta">
+                                <span class="station-id">ID: ${station.stationId}</span>
+                                <span class="station-status ${station.active ? 'active' : 'inactive'}">
+                                    ${station.active ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        // Show station details
+        async function showStation(stationId) {
+            currentStation = stations.find(s => s.stationId === stationId);
+
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('detailView').classList.add('visible');
+            document.getElementById('headerTitle').classList.add('hidden');
+            document.getElementById('headerBack').classList.add('visible');
+            document.getElementById('detailTitle').textContent = currentStation?.name || 'Station ' + stationId;
+
+            // Render header
+            const header = document.getElementById('stationHeader');
+            header.innerHTML = `
+                <h2>${currentStation?.name || 'Station ' + stationId}</h2>
+                <div class="station-location">
+                    ${currentStation?.region || currentStation?.city || 'Israel'}
+                    ${currentStation?.location ? ` • ${currentStation.location.latitude?.toFixed(4)}, ${currentStation.location.longitude?.toFixed(4)}` : ''}
+                </div>
+                <div class="last-updated" id="lastUpdated">Loading...</div>
+            `;
+
+            // Load readings
+            await loadReadings(stationId);
+        }
+
+        // Load station readings
+        async function loadReadings(stationId) {
+            const container = document.getElementById('readingsContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Loading readings...</p>
+                </div>
+            `;
+
+            try {
+                const data = await fetchAPI(`/stations/${stationId}/data/latest`);
+
+                // Update last updated
+                document.getElementById('lastUpdated').textContent =
+                    `Last updated: ${data.datetime || 'Unknown'}`;
+
+                // Process readings
+                currentReadings = (data.channels || []).map(channel => ({
+                    id: channel.channelId,
+                    name: channel.name,
+                    value: channel.value,
+                    units: channel.units || '',
+                    status: channel.status,
+                    isMeteo: isMeteoParam(channel.name),
+                    airStatus: getStatus(channel.name, channel.value)
+                }));
+
+                renderReadings();
+            } catch (error) {
+                console.error('Error loading readings:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <div class="error-icon">⚠️</div>
+                        <p class="error-message">Failed to load readings: ${error.message}</p>
+                        <button class="retry-btn" onclick="loadReadings(${stationId})">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render readings
+        function renderReadings() {
+            const container = document.getElementById('readingsContainer');
+
+            let filtered = currentReadings;
+            if (currentFilter === 'air') {
+                filtered = currentReadings.filter(r => !r.isMeteo);
+            } else if (currentFilter === 'meteo') {
+                filtered = currentReadings.filter(r => r.isMeteo);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-results">No readings available</div>';
+                return;
+            }
+
+            // Group readings
+            const airReadings = filtered.filter(r => !r.isMeteo);
+            const meteoReadings = filtered.filter(r => r.isMeteo);
+
+            let html = '';
+
+            if (airReadings.length > 0 && currentFilter !== 'meteo') {
+                html += `
+                    <div class="readings-section">
+                        <div class="section-title">Air Quality</div>
+                        ${airReadings.map(renderReadingCard).join('')}
+                    </div>
+                `;
+            }
+
+            if (meteoReadings.length > 0 && currentFilter !== 'air') {
+                html += `
+                    <div class="readings-section">
+                        <div class="section-title">Meteorological</div>
+                        ${meteoReadings.map(renderReadingCard).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderReadingCard(reading) {
+            const value = reading.value != null && reading.value !== -9999
+                ? reading.value.toFixed(1)
+                : '--';
+
+            return `
+                <div class="reading-card">
+                    <div class="reading-indicator ${reading.airStatus}"></div>
+                    <div class="reading-content">
+                        <div class="reading-name">${reading.name}</div>
+                        <div class="reading-description">${getDescription(reading.name)}</div>
+                    </div>
+                    <div class="reading-value">
+                        <div class="reading-number">${value}</div>
+                        <div class="reading-unit">${reading.units}</div>
+                        ${!reading.isMeteo ? `<span class="reading-status ${reading.airStatus}">${getStatusLabel(reading.airStatus)}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Show list view
+        function showList() {
+            document.getElementById('listView').classList.remove('hidden');
+            document.getElementById('detailView').classList.remove('visible');
+            document.getElementById('headerTitle').classList.remove('hidden');
+            document.getElementById('headerBack').classList.remove('visible');
+            currentStation = null;
+        }
+
+        // Refresh
+        function refresh() {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('spinning');
+
+            if (currentStation) {
+                loadReadings(currentStation.stationId).finally(() => {
+                    btn.classList.remove('spinning');
+                });
+            } else {
+                loadStations().finally(() => {
+                    btn.classList.remove('spinning');
+                });
+            }
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = stations.filter(s =>
+                (s.name && s.name.toLowerCase().includes(query)) ||
+                (s.region && s.region.toLowerCase().includes(query)) ||
+                (s.city && s.city.toLowerCase().includes(query)) ||
+                String(s.stationId).includes(query)
+            );
+            renderStationList(filtered);
+        });
+
+        // Filter chips
+        document.getElementById('filters').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-chip')) {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                renderReadings();
+            }
+        });
+
+        // Initialize
+        loadStations();
+    </script>
+</body>
+</html>
