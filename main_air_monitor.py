@@ -81,10 +81,10 @@ if __name__ == "__main__":
     # future_time = datetime.today() + dt.timedelta(days=1)  # Set the next time to wake up
     # yesterday = datetime.today() - dt.timedelta(days=1) # Calculate time window to analyze daily:
     # start_date_time_daily = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
-    start_date_time_daily = datetime(2025, 1, 1, 0, 0, 0)
+    start_date_time_daily = datetime(2025, 4, 7, 20, 0, 0)
     # end_date_time_daily = yesterday.replace(hour=23, minute=59, second=0, microsecond=0)
-    end_date_time_daily = datetime(2025, 3, 11, 0, 0, 0)
-    T_window_back_sec = 2*24*60*60 # 14*24*60*60
+    end_date_time_daily = datetime(2025, 4, 8, 13, 0, 0)
+    T_window_back_sec = 12*24*60*60 # 14*24*60*60
     daily_report_file_name = 'Daily_' + str(start_date_time_daily).replace(':', '-').replace(' ', '-') + '_to_' + str(
         end_date_time_daily).replace(':', '-').replace(' ', '-')
     params_air = pd.read_excel('params_air.xlsx')
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     city_ids = gdf['Id'].unique()
 
     #======== RUN BY DEMAND ========================================================================================
-    param_names_2_anlz_vec =  ['WD'] #['PM2.5','PM10'] # param_name_vec
+    param_names_2_anlz_vec =  ['WD','WS','NOX','NO','NO2','SO2','O3'] #['PM2.5','PM10'] # param_name_vec
     analyze.run_analyze_T(params_air_tbl, city_ids, gdf, 'israel_24hr', city_codes, param_names_2_anlz_vec, T_window_back_sec, True)
 
     #======== RUN SCHEDULED ========================================================================================
